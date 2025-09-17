@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Slot Machine</title><style>
+        :root{
+            --scroll0:0;
+            --scroll1:1;
+            --scroll2:2;
+            --speed0: 1500;
+            --speed1:1500;
+            --speed2:1500;
+            --orange:rgb(255, 200, 0);
+            --blue: rgb(0, 0, 51);
+            --font:1cm;
+            --n:20;
+        }
+        body{
+        cursor:none;
+        will-change:transform;
+
+            margin: 0px;
+            padding-right: 0.5cm;
+            padding-left: 0.5cm;
+            background-color: black;
+            font-family: "myFont";
+        }
+        body *{
+            font-family: "myFont";
+            color: var(--orange);
+            font-size: var(--font);
+            margin-left: -0.6cm;
+        }
+        .container{
+        will-change:transform;
+    position: relative;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        .container *{
+            font-size: 0px;
+        }
+        .jpot{
+            display: flex;
+            position: absolute;
+            top:0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            background-image: url(./fire.gif);
+            background-color: var(--orange);
+            background-position: center; /* Center the image */
+  background-repeat:repeat-x; /* Do not repeat the image */
+  background-size: cover; 
+            font-size: 1cm;}
+            .jpot_text{
+            display: flex;
+            position: absolute;
+            bottom:3cm;
+            left: 50%;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 0.5cm;
+            border-radius: 0.25cm;
+            z-index: 200000;
+            animation-name: resize;
+            animation-duration: 0.5s;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+            opacity: 0;
+            font-size: var(--font);}
+            @keyframes resize {
+  0%   {transform:translateX(-50%) translateY(50%) scale(0.9);}
+  50%  {transform:translateX(-50%) translateY(50%) scale(1.1);}
+  100% {transform:translateX(-50%) translateY(50%) scale(0.9);}
+}
+
+        .active{
+            transition-duration: 10s;
+            opacity: 1;
+        }
+        .col{
+            position:relative;
+            background:white;
+            z-index:11781;
+            will-change:transform;
+            background-color: var(--blue);
+            overflow: hidden;
+            aspect-ratio: 2/3;
+            padding: 0.5cm;
+            box-sizing: border-box;
+            border-right: 2px solid var(--orange);
+            border-left: 2px solid var(--orange);
+            margin-left: 0.5cm;
+            margin-right: 0.5cm;
+            width: calc(33.33% - 1cm);
+            display: inline-block;
+            min-height: 100%;
+        }
+        .col canvas{
+            position:relative;
+            top:0;
+            left:0;
+            z-index:10000;
+            will-change:transform;
+            display: inline-block;
+            width: 100%;
+            aspect-ratio: calc(1 / (var(--n) + 3));
+            transition-timing-function: cubic-bezier(0.3, 0.3, 0.7, 0.85);
+        }
+        .col img{
+            will-change:transform;
+            width: 100%;
+            aspect-ratio: 1;
+            transition-timing-function: linear;
+        }
+        .col0 canvas{
+            transition-duration: calc(1ms * var(--speed0));
+            transform: translateY(calc((-100% * (var(--scroll0) + 1) + 25%) / (var(--n) + 3)));
+             
+        }
+        .col1 canvas {
+            transition-duration: calc(1ms * var(--speed1));
+            transform: translateY(calc((-100% * (var(--scroll1) + 1) + 25%) / (var(--n) + 3)));
+             
+        }
+        .col2 canvas {
+            transition-duration: calc(0.001s * var(--speed2));
+            transform: translateY(calc((-100% * (var(--scroll2) + 1) + 25%) / (var(--n) + 3)));
+             
+        }
+        .col0 img{
+            transition-duration: calc(1ms * var(--speed0));
+            transform: translateY(calc((-100% * (var(--scroll0) + 1) + 25%)));
+             
+        }
+        .col1 img{
+            transition-duration: calc(1ms * var(--speed1));
+            transform: translateY(calc(-100% * (var(--scroll1) + 1) + 25%));
+             
+        }
+        .col2 img{
+            transition-duration: calc(0.001s * var(--speed2));
+            transform: translateY(calc(-100% * (var(--scroll2) + 1) + 25%));
+             
+        }
+        .pointWindow{
+            box-sizing:border-box;
+            display: flex;
+            width: 100%;
+            background-color: var(--blue);
+            padding: 0.5cm;
+        }
+        .pointWindow>div{
+            margin: auto;
+        }
+        .pointadd{
+            display: inline-block;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding: 0.25cm;
+            background-color: green;
+            border-radius: 0.25cm;
+            color:white;
+        }
+        .pointlabel{
+            margin-top: 0;
+            margin-bottom: 0;
+            padding: 0.25cm;
+            border-radius: 0.25cm;
+            display: inline-block;
+        }
+        .hidden{
+            transition-duration: 1000ms;
+            opacity: 0;
+            transform: scale(1.5);
+        }
+        @font-face {
+            font-family: "myFont";
+            src: url("VCR_OSD_MONO.ttf");
+        }
+    </style>
+    
+</head>
+<body>
+    <!-- Добавяме аудио елементи -->
+    <audio id="noPoints" src="./no-points.mp3"></audio>	
+    <audio id="spinSound" src="./2003-preview.mp3"></audio>
+    <audio id="jackpotSound" src="./utomp3.com - Ionut Cercel  Made in Romania.mp3"></audio>
+    <audio id="buttonSound" src="./150-preview.mp3" preload="auto"></audio>
+    <audio id="pointsSound" src="./150-preview.mp3"></audio>
+    <audio id="stopSound" src="./2000-preview.mp3"></audio>
+    <audio id="easterEggSound" src="./domdom.mp3" preload="auto"></audio>
+    <div class="container"><div class=jpot id="jpot1"></div><div class='jpot_text' id="jpot2">СПЕЧЕЛИ!!!</div>
+    <div class="col col0" id="col0"><canvas id="col0im"></canvas><img src="easter egg.gif"><img src="easter egg.gif"><img src="easter egg.gif"></div><div class="col col1" id="col1"><canvas id="col1im"></canvas><img src="easter egg.gif"><img src="easter egg.gif"><img src="easter egg.gif"></div><div class="col col2" id="col2"><canvas id="col2im"></canvas><img src="easter egg.gif"><img src="easter egg.gif"><img src="easter egg.gif"></div></div>
+    <div class="pointWindow"><div style="display:flex;width:10cm; align-items: stretch;"><img src="Rectangle 68.png" style="height:calc(var(--font) * 1.5);display:inline-block"><p style="flex-shrink: 0;margin:auto;background-color: red;" class="pointadd hidden" id="no">min 32!</p><p id="hex" class="pointlabel">0</p><p class="pointadd hidden" id="+">+1</p></div></div>
+    <script src="script.js"></script>
+</body>
+</html>
